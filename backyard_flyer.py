@@ -63,10 +63,16 @@ class BackyardFlyer(Drone):
             elif self.flight_state == States.DISARMING:
                 if ~self.armed & ~self.guided:
                     self.manual_transition()
-
+#the waypoints were changed to move in the different direction with set step size
     def calculate_box(self):
         print("Setting Home")
-        local_waypoints = [[10.0, 0.0, 3.0], [10.0, 10.0, 3.0], [0.0, 10.0, 3.0], [0.0, 0.0, 3.0]]
+        standard_step = 5.0
+        #further_reach = 20.0
+        #local_waypoints = [[10.0, 0.0, 3.0], [10.0, 10.0, 3.0], [0.0, 10.0, 3.0], [0.0, 0.0, 3.0]]
+        local_waypoints = [[-standard_step, 0.0, 3.0],
+        [-standard_step, -standard_step, 3.0],
+        [0.0, -standard_step, 3.0],
+        [0.0, 0.0, 3.0]]
         return local_waypoints
 
     def arming_transition(self):
@@ -128,7 +134,6 @@ class BackyardFlyer(Drone):
 
 if __name__ == "__main__":
     conn = MavlinkConnection('tcp:127.0.0.1:5760', threaded=False, PX4=False)
-    #conn = WebSocketConnection('ws://127.0.0.1:5760')
     drone = BackyardFlyer(conn)
     time.sleep(2)
     drone.start()
