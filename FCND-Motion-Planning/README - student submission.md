@@ -5,44 +5,36 @@
 
 This project is a continuation of the Backyard Flyer project where you executed a simple square shaped flight path. In this project you will integrate the techniques that you have learned throughout the last several lessons to plan a path through an urban environment. Check out the [project rubric](https://review.udacity.com/#!/rubrics/1534/view) for more detail on what constitutes a passing submission.
 
-## Option to do this project in a GPU backed virtual machine in the Udacity classroom!
-Rather than downloading the simulator and starter files you can simply complete this project in a virual workspace in the Udacity classroom! Follow [these instructions](https://classroom.udacity.com/nanodegrees/nd787/parts/5aa0a956-4418-4a41-846f-cb7ea63349b3/modules/0c12632a-b59a-41c1-9694-2b3508f47ce7/lessons/5f628104-5857-4a3f-93f0-d8a53fe6a8fd/concepts/ab09b378-f85f-49f4-8845-d59025dd8a8e?contentVersion=1.0.0&contentLocale=en-us) to proceed with the VM. 
-
-## To complete this project on your local machine, follow these instructions:
-### Step 1: Download the Simulator
-This is a new simulator environment!  
-
-Download the Motion-Planning simulator for this project that's appropriate for your operating system from the [simulator releases respository](https://github.com/udacity/FCND-Simulator-Releases/releases).
-
-### Step 2: Set up your Python Environment
-If you haven't already, set up your Python environment and get all the relevant packages installed using Anaconda following instructions in [this repository](https://github.com/udacity/FCND-Term1-Starter-Kit)
+### Step 1: Set up your Python Environment
+Python environment is set and all the relevant packages installed using Anaconda following instructions in [this repository](https://github.com/udacity/FCND-Term1-Starter-Kit)
 
 ### Step 3: Clone this Repository
-```sh
+```Cloned repo as per below link
 git clone https://github.com/udacity/FCND-Motion-Planning
 ```
 ### Step 4: Test setup
-The first task in this project is to test the [solution code](https://github.com/udacity/FCND-Motion-Planning/blob/master/backyard_flyer_solution.py) for the Backyard Flyer project in this new simulator. Verify that your Backyard Flyer solution code works as expected and your drone can perform the square flight path in the new simulator. To do this, start the simulator and run the [`backyard_flyer_solution.py`](https://github.com/udacity/FCND-Motion-Planning/blob/master/backyard_flyer_solution.py) script.
-
-```sh
-source activate fcnd # if you haven't already sourced your Python environment, do so now.
+Backyard Flyer solution code works as expected and drone can perform the square flight path in the new simulator. 
+```
+source activate fcnd
 python backyard_flyer_solution.py
 ```
-The quad should take off, fly a square pattern and land, just as in the previous project. If everything functions as expected then you are ready to start work on this project. 
+The quad took off, flied a square pattern and landed
 
 ### Step 5: Inspect the relevant files
 For this project, you are provided with two scripts, `motion_planning.py` and `planning_utils.py`. Here you'll also find a file called `colliders.csv`, which contains the 2.5D map of the simulator environment. 
 
 ### Step 6: Explain what's going on in  `motion_planning.py` and `planning_utils.py`
 
-`motion_planning.py` is basically a modified version of `backyard_flyer.py` that leverages some extra functions in `planning_utils.py`. It should work right out of the box.  Try running `motion_planning.py` to see what it does. To do this, first start up the simulator, then at the command line:
+`motion_planning.py` is basically a modified version of `backyard_flyer.py` that leverages some extra functions in `planning_utils.py`.
  
 ```sh
 source activate fcnd # if you haven't already sourced your Python environment, do so now.
 python motion_planning.py
 ```
 
-You should see the quad fly a jerky path of waypoints to the northeast for about 10 m then land.  What's going on here? Your first task in this project is to explain what's different about `motion_planning.py` from the `backyard_flyer_solution.py` script, and how the functions provided in `planning_utils.py` work. 
+Difference between `motion_planning.py` and `backyard_flyer_solution.py` script is in changed waypoints. In motion_planning they are changed to A* path planner that avoids obstacles while preserving the same state machine and flight execution logic. Planning occurs on the ground after arming (PLANNING state). Once complete, the drone takes off and follows the waypoint sequence exactly as in the backyard flyer script.
+
+The plan_path() method provided in `planning_utils.py` creates map of obstacles by loading colliders.csv to account for building positions and dimensions. A* function (a_star()) - Uses only 4-connected actions (N, S, E, W) with cost 1 each. Heuristic - Euclidean distance.
 
 ### Step 7: Write your planner
 
