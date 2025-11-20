@@ -1,82 +1,23 @@
-## Project: 3D Motion Planning
-![Quad Image](./misc/enroute.png)
+Implementing My Path Planning Algorithm
+1. Set global home position
+In `plan_path(`) of `student_motion_planning.py`, I read the first line of `colliders.csv`, parsed lat0 and lon0, and invoked `self.set_home_position(lon0, lat0, 0)`. This ensures the local coordinate frame is fixed to the map origin regardless of spawn location.
 
----
+2. Set current local position
+Immediately after setting home, I converted the drone’s current global position `(self.global_position)` to local NED coordinates using `global_to_local(self.global_position, self.global_home)`.
 
+3. Set grid start position from local position
+The grid start is computed as
+`grid_start = (int(current_local[0] - north_offset), int(current_local[1] - east_offset))`.
+This enables takeoff and planning from any location on the map.
 
-# Required Steps for a Passing Submission:
-1. Load the 2.5D map in the colliders.csv file describing the environment.
-2. Discretize the environment into a grid or graph representation.
-3. Define the start and goal locations.
-4. Perform a search using A* or other search algorithm.
-5. Use a collinearity test or ray tracing method (like Bresenham) to remove unnecessary waypoints.
-6. Return waypoints in local ECEF coordinates (format for `self.all_waypoints` is [N, E, altitude, heading], where the drone’s start location corresponds to [0, 0, 0, 0].
-7. Write it up.
-8. Congratulations!  Your Done!
+4. Set grid goal position from geodetic coords
+I defined a reachable goal 100 m north and 100 m east of home in local meters `(goal_north = 100.0, goal_east = 100.0)`. This position is converted to grid coordinates using the same offset subtraction as the start, guaranteeing an obstacle-free cell in the San Francisco map.
 
-## [Rubric](https://review.udacity.com/#!/rubrics/1534/view) Points
-### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
+5. Modify A* to include diagonal motion
+In `planning_utils.py`, I extended the Action Enum with four diagonal actions (NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST), each assigned cost `np.sqrt(2)`. The `valid_actions()` function was updated to check bounds and occupancy for all eight neighbors. The Euclidean heuristic remains admissible and consistent for an 8-connected grid.
 
----
-### Writeup / README
+6. Cull waypoints
+I implemented `prune_path()` in `planning_utils.py` using a collinearity test based on the cross-product magnitude. Points yielding near-zero area (< 1e-5) are removed, dramatically reducing waypoint count while preserving the geometric path.
 
-#### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  
-
-You're reading it! Below I describe how I addressed each rubric point and where in my code each point is handled.
-
-### Explain the Starter Code
-
-#### 1. Explain the functionality of what's provided in `motion_planning.py` and `planning_utils.py`
-These scripts contain a basic planning implementation that includes...
-
-And here's a lovely image of my results (ok this image has nothing to do with it, but it's a nice example of how to include images in your writeup!)
-![Top Down View](./misc/high_up.png)
-
-Here's | A | Snappy | Table
---- | --- | --- | ---
-1 | `highlight` | **bold** | 7.41
-2 | a | b | c
-3 | *italic* | text | 403
-4 | 2 | 3 | abcd
-
-### Implementing Your Path Planning Algorithm
-
-#### 1. Set your global home position
-Here students should read the first line of the csv file, extract lat0 and lon0 as floating point values and use the self.set_home_position() method to set global home. Explain briefly how you accomplished this in your code.
-
-
-And here is a lovely picture of our downtown San Francisco environment from above!
-![Map of SF](./misc/map.png)
-
-#### 2. Set your current local position
-Here as long as you successfully determine your local position relative to global home you'll be all set. Explain briefly how you accomplished this in your code.
-
-
-Meanwhile, here's a picture of me flying through the trees!
-![Forest Flying](./misc/in_the_trees.png)
-
-#### 3. Set grid start position from local position
-This is another step in adding flexibility to the start location. As long as it works you're good to go!
-
-#### 4. Set grid goal position from geodetic coords
-This step is to add flexibility to the desired goal location. Should be able to choose any (lat, lon) within the map and have it rendered to a goal location on the grid.
-
-#### 5. Modify A* to include diagonal motion (or replace A* altogether)
-Minimal requirement here is to modify the code in planning_utils() to update the A* implementation to include diagonal motions on the grid that have a cost of sqrt(2), but more creative solutions are welcome. Explain the code you used to accomplish this step.
-
-#### 6. Cull waypoints 
-For this step you can use a collinearity test or ray tracing method like Bresenham. The idea is simply to prune your path of unnecessary waypoints. Explain the code you used to accomplish this step.
-
-
-
-### Execute the flight
-#### 1. Does it work?
-It works!
-
-### Double check that you've met specifications for each of the [rubric](https://review.udacity.com/#!/rubrics/1534/view) points.
-  
-# Extra Challenges: Real World Planning
-
-For an extra challenge, consider implementing some of the techniques described in the "Real World Planning" lesson. You could try implementing a vehicle model to take dynamic constraints into account, or implement a replanning method to invoke if you get off course or encounter unexpected obstacles.
-
-
+Execute the flight
+The solution works reliably. The drone arms, plans on the ground, takes off from its actual position, follows a smooth pruned path with diagonal segments, avoids all buildings, reaches the goal approximately 140 m away, and lands. A fallback emergency waypoint prevents empty-path crashes.
