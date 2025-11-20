@@ -1,9 +1,7 @@
 # FCND - 3D Motion Planning
 ![Quad Image](./misc/enroute.png)
 
-
-
-This project is a continuation of the Backyard Flyer project where you executed a simple square shaped flight path. In this project you will integrate the techniques that you have learned throughout the last several lessons to plan a path through an urban environment. Check out the [project rubric](https://review.udacity.com/#!/rubrics/1534/view) for more detail on what constitutes a passing submission.
+This project is a continuation of the Backyard Flyer project where you executed a simple square shaped flight path. In this project I integrated the techniques that were learnt throughout the last several lessons to plan a path through an urban environment.
 
 ### Step 1: Set up your Python Environment
 Python environment is set and all the relevant packages installed using Anaconda following instructions in [this repository](https://github.com/udacity/FCND-Term1-Starter-Kit)
@@ -21,7 +19,7 @@ python backyard_flyer_solution.py
 The quad took off, flied a square pattern and landed
 
 ### Step 5: Inspect the relevant files
-For this project, you are provided with two scripts, `motion_planning.py` and `planning_utils.py`. Here you'll also find a file called `colliders.csv`, which contains the 2.5D map of the simulator environment. 
+For this project, two scripts provided, `motion_planning.py` and `planning_utils.py`. Found a file called `colliders.csv`, which contains the 2.5D map of the simulator environment. 
 
 ### Step 6: Explain what's going on in  `motion_planning.py` and `planning_utils.py`
 
@@ -32,13 +30,13 @@ source activate fcnd # if you haven't already sourced your Python environment, d
 python motion_planning.py
 ```
 
-Difference between `motion_planning.py` and `backyard_flyer_solution.py` script is in changed waypoints. In motion_planning they are changed to A* path planner that avoids obstacles while preserving the same state machine and flight execution logic. Planning occurs on the ground after arming (PLANNING state). Once complete, the drone takes off and follows the waypoint sequence exactly as in the backyard flyer script.
+Difference between `motion_planning.py` and `backyard_flyer_solution.py` script is in changed waypoints. In motion_planning they are changed to A* path planner that avoids obstacles while preserving the same state machine and flight execution logic. Planning occurs on the ground after arming (PLANNING state). Once planning compelte, the drone takes off and follows the waypoint sequence exactly as in the backyard flyer script.
 
 The plan_path() method provided in `planning_utils.py` creates map of obstacles by loading colliders.csv to account for building positions and dimensions. A* function (a_star()) - Uses only 4-connected actions (N, S, E, W) with cost 1 each. Heuristic - Euclidean distance.
 
-### Step 7: Write your planner
+### Step 7: My planner
 
-Your planning algorithm is going to look something like the following:
+My planning algorithm is embedded in the code "submission_motion_planning.py":
 
 - Load the 2.5D map in the `colliders.csv` file describing the environment.
 - Discretize the environment into a grid or graph representation.
